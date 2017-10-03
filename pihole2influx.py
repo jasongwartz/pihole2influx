@@ -10,7 +10,9 @@ INFLUX_DATABASE = os.environ['INFLUX_DATABASE'] if 'INFLUX_DATABASE' in os.envir
 PIHOLE_API = os.environ['PIHOLE_API'] if 'PIHOLE_API' in os.environ else 'http://localhost/admin/api.php'
 
 def get_pihole_stats():
-    return requests.get(PIHOLE_API).json()
+    data =  requests.get(PIHOLE_API).json()
+    data['ads_percentage_today'] = float(data['ads_percentage_today']) # Will be refused by influxdb if it's an integer
+    return data
 
 def write_to_influx(stats_dict):
     client = InfluxDBClient(INFLUX_HOST, INFLUX_PORT, '', '', INFLUX_DATABASE)
